@@ -1,0 +1,24 @@
+{
+  "name": "Bild Overlay",
+  "short_name": "Overlay",
+  "description": "Zwei Bilder überlagern, vergleichen und speichern",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='24' fill='%231a1a1a'/><rect x='30' y='30' width='90' height='90' rx='12' fill='white'/><rect x='72' y='72' width='90' height='90' rx='12' fill='white' opacity='.5'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='64' fill='%231a1a1a'/><rect x='80' y='80' width='240' height='240' rx='32' fill='white'/><rect x='192' y='192' width='240' height='240' rx='32' fill='white' opacity='.5'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
