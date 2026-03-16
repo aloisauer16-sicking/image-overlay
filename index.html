@@ -18,26 +18,29 @@ header h1{font-size:16px;font-weight:500;}
 .dz:hover{border-color:#666;}
 .dz.loaded{border-color:#4caf50;border-style:solid;}
 .dz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.dz .icon{font-size:22px;}
 .dz .lbl{font-size:11px;color:#666;word-break:break-all;padding:0 4px;}
 .tabs{display:flex;gap:6px;margin-bottom:10px;}
 .tab{font-size:13px;padding:7px 16px;border-radius:20px;border:none;background:#e0e0e0;color:#555;cursor:pointer;font-weight:500;}
 .tab.active{background:#1a1a1a;color:#fff;}
-.controls{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;display:grid;gap:10px;}
+.controls{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;display:grid;gap:8px;}
+.sec{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.06em;margin-top:6px;}
 .cr{display:flex;align-items:center;gap:8px;}
 .cr label{font-size:12px;color:#555;min-width:110px;}
 .cr input[type=range]{flex:1;accent-color:#1a1a1a;}
 .cr .val{font-size:12px;font-weight:600;min-width:44px;text-align:right;}
 .canvas-wrap{background:#888;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;min-height:180px;}
-canvas{display:block;max-width:100%;touch-action:none;}
-.ph{color:#fff;font-size:13px;padding:20px;}
+canvas{display:block;max-width:100%;}
+.ph{color:#fff;font-size:13px;padding:20px;text-align:center;}
 .hint{font-size:11px;color:#888;margin-top:5px;}
 .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .btn{font-size:13px;padding:10px 18px;border-radius:8px;border:1.5px solid #ccc;background:#fff;color:#1a1a1a;cursor:pointer;font-weight:500;}
 .btn:hover{background:#f0f0f0;}
 .btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
 .btn.primary:hover{background:#333;}
-.ba-line{position:absolute;top:0;bottom:0;width:3px;background:#fff;cursor:ew-resize;z-index:10;touch-action:none;}
+.drag-row{display:flex;gap:6px;align-items:center;margin-bottom:4px;}
+.dm{font-size:12px;padding:5px 14px;border-radius:20px;border:1.5px solid #ccc;background:#fff;color:#555;cursor:pointer;}
+.dm.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.ba-line{position:absolute;top:0;bottom:0;width:3px;background:#fff;cursor:ew-resize;z-index:10;}
 .ba-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.4);}
 </style>
 </head>
@@ -51,16 +54,8 @@ canvas{display:block;max-width:100%;touch-action:none;}
 
 <div class="main">
   <div class="drop-row">
-    <div class="dz" id="dz1">
-      <input type="file" accept="image/*" id="f1">
-      <div class="icon">🖼️</div>
-      <div class="lbl" id="l1">Bild 1 tippen</div>
-    </div>
-    <div class="dz" id="dz2">
-      <input type="file" accept="image/*" id="f2">
-      <div class="icon">🖼️</div>
-      <div class="lbl" id="l2">Bild 2 tippen</div>
-    </div>
+    <div class="dz" id="dz1"><input type="file" accept="image/*" id="f1"><div style="font-size:20px;">+</div><div class="lbl" id="l1">Bild 1 laden</div></div>
+    <div class="dz" id="dz2"><input type="file" accept="image/*" id="f2"><div style="font-size:20px;">+</div><div class="lbl" id="l2">Bild 2 laden</div></div>
   </div>
 
   <div class="tabs">
@@ -70,18 +65,30 @@ canvas{display:block;max-width:100%;touch-action:none;}
 
   <div id="panel-overlay">
     <div class="controls">
-      <div class="cr"><label>Deckkraft Bild 2</label><input type="range" id="opacity" min="0" max="100" value="50" step="1"><span class="val" id="opVal">50%</span></div>
-      <div class="cr"><label>Zoom Bild 1</label><input type="range" id="scale1" min="10" max="300" value="100" step="1"><span class="val" id="s1Val">100%</span></div>
-      <div class="cr"><label>Zoom Bild 2</label><input type="range" id="scale2" min="10" max="300" value="100" step="1"><span class="val" id="s2Val">100%</span></div>
-      <div class="cr"><label>Rotation Bild 2</label><input type="range" id="rot2" min="-180" max="180" value="0" step="1"><span class="val" id="r2Val">0°</span></div>
-      <div class="cr"><label>Position X (B2)</label><input type="range" id="offX" min="-500" max="500" value="0" step="1"><span class="val" id="xVal">0px</span></div>
-      <div class="cr"><label>Position Y (B2)</label><input type="range" id="offY" min="-500" max="500" value="0" step="1"><span class="val" id="yVal">0px</span></div>
+      <div class="drag-row">
+        <span style="font-size:12px;color:#555;">Ziehen:</span>
+        <button class="dm active" id="dm1" onclick="setDragMode(1)">Bild 1</button>
+        <button class="dm" id="dm2" onclick="setDragMode(2)">Bild 2</button>
+      </div>
+
+      <div class="sec">BILD 1</div>
+      <div class="cr"><label>Zoom</label><input type="range" id="scale1" min="10" max="300" value="100" step="1"><span class="val" id="s1Val">100%</span></div>
+      <div class="cr"><label>Position X</label><input type="range" id="offX1" min="-500" max="500" value="0" step="1"><span class="val" id="x1Val">0px</span></div>
+      <div class="cr"><label>Position Y</label><input type="range" id="offY1" min="-500" max="500" value="0" step="1"><span class="val" id="y1Val">0px</span></div>
+
+      <div class="sec">BILD 2</div>
+      <div class="cr"><label>Deckkraft</label><input type="range" id="opacity" min="0" max="100" value="50" step="1"><span class="val" id="opVal">50%</span></div>
+      <div class="cr"><label>Zoom</label><input type="range" id="scale2" min="10" max="300" value="100" step="1"><span class="val" id="s2Val">100%</span></div>
+      <div class="cr"><label>Rotation</label><input type="range" id="rot2" min="-180" max="180" value="0" step="1"><span class="val" id="r2Val">0°</span></div>
+      <div class="cr"><label>Position X</label><input type="range" id="offX2" min="-500" max="500" value="0" step="1"><span class="val" id="x2Val">0px</span></div>
+      <div class="cr"><label>Position Y</label><input type="range" id="offY2" min="-500" max="500" value="0" step="1"><span class="val" id="y2Val">0px</span></div>
     </div>
+
     <div class="canvas-wrap" id="wrap">
       <canvas id="cv"></canvas>
       <div class="ph" id="ph">Bitte zwei Bilder laden</div>
     </div>
-    <div class="hint">Bild 2 mit Finger/Maus verschieben (Drag)</div>
+    <div class="hint" id="drag-hint">Bild 1 mit Finger/Maus verschieben — oben umschalten</div>
   </div>
 
   <div id="panel-ba" style="display:none;">
@@ -91,9 +98,7 @@ canvas{display:block;max-width:100%;touch-action:none;}
     </div>
     <div class="canvas-wrap" id="ba-wrap" style="cursor:ew-resize;">
       <canvas id="ba-cv"></canvas>
-      <div class="ba-line" id="ba-line" style="left:50%;">
-        <div class="ba-handle">&#8596;</div>
-      </div>
+      <div class="ba-line" id="ba-line" style="left:50%;"><div class="ba-handle">&#8596;</div></div>
       <div class="ph" id="ba-ph">Bitte zwei Bilder laden</div>
     </div>
     <div class="hint">Schieber ziehen zum Vergleichen</div>
@@ -103,20 +108,19 @@ canvas{display:block;max-width:100%;touch-action:none;}
     <button class="btn primary" id="dlBtn">💾 Speichern</button>
     <button class="btn" id="resetBtn">Zurücksetzen</button>
   </div>
+  <div style="font-size:11px;color:#aaa;margin-top:5px;" id="saveInfo"></div>
 </div>
 
 <script>
 const W=700,H=500;
 let img1=null,img2=null,mode='overlay';
-let img2OffX=0,img2OffY=0;
-let dragActive=false,dragStartX=0,dragStartY=0;
+let off1X=0,off1Y=0,off2X=0,off2Y=0;
+let dragActive=false,dragMode=1,dragSX=0,dragSY=0;
 let baPos=0.5,baDragging=false;
+let saveIndex=1;
 
-function loadImg(file,cb){
-  const r=new FileReader();
-  r.onload=e=>{const i=new Image();i.onload=()=>cb(i);i.src=e.target.result;};
-  r.readAsDataURL(file);
-}
+function loadImg(file,cb){const r=new FileReader();r.onload=e=>{const i=new Image();i.onload=()=>cb(i);i.src=e.target.result;};r.readAsDataURL(file);}
+
 function setupDrop(fId,dzId,lId,num){
   document.getElementById(fId).addEventListener('change',function(){
     if(!this.files[0])return;
@@ -133,15 +137,17 @@ setupDrop('f2','dz2','l2',2);
 
 function bind(id,outId,suffix,fn){
   document.getElementById(id).addEventListener('input',function(){
-    document.getElementById(outId).textContent=Math.round(this.value)+suffix;fn();
+    document.getElementById(outId).textContent=Math.round(+this.value)+suffix;fn();
   });
 }
 bind('opacity','opVal','%',draw);
 bind('scale1','s1Val','%',draw);
 bind('scale2','s2Val','%',draw);
 bind('rot2','r2Val','°',draw);
-bind('offX','xVal','px',()=>{img2OffX=+document.getElementById('offX').value;draw();});
-bind('offY','yVal','px',()=>{img2OffY=+document.getElementById('offY').value;draw();});
+bind('offX1','x1Val','px',()=>{off1X=+document.getElementById('offX1').value;draw();});
+bind('offY1','y1Val','px',()=>{off1Y=+document.getElementById('offY1').value;draw();});
+bind('offX2','x2Val','px',()=>{off2X=+document.getElementById('offX2').value;draw();});
+bind('offY2','y2Val','px',()=>{off2Y=+document.getElementById('offY2').value;draw();});
 bind('ba-s1','baS1Val','%',baDrawFull);
 bind('ba-s2','baS2Val','%',baDrawFull);
 
@@ -154,14 +160,14 @@ function draw(){
   if(img1){
     const sc=+document.getElementById('scale1').value/100;
     ctx.globalAlpha=1;
-    ctx.drawImage(img1,(W-img1.width*sc)/2,(H-img1.height*sc)/2,img1.width*sc,img1.height*sc);
+    ctx.drawImage(img1,(W-img1.width*sc)/2+off1X,(H-img1.height*sc)/2+off1Y,img1.width*sc,img1.height*sc);
   }
   if(img2){
     const sc=+document.getElementById('scale2').value/100;
     const rot=+document.getElementById('rot2').value*Math.PI/180;
     ctx.globalAlpha=+document.getElementById('opacity').value/100;
     ctx.save();
-    ctx.translate(W/2+img2OffX,H/2+img2OffY);
+    ctx.translate(W/2+off2X,H/2+off2Y);
     ctx.rotate(rot);
     ctx.drawImage(img2,-img2.width*sc/2,-img2.height*sc/2,img2.width*sc,img2.height*sc);
     ctx.restore();
@@ -173,29 +179,49 @@ const baCv=document.getElementById('ba-cv'),baCtx=baCv.getContext('2d');
 function baDrawFull(){
   if(!img1&&!img2)return;
   document.getElementById('ba-ph').style.display='none';
-  baCv.width=W;baCv.height=H;
-  baCtx.clearRect(0,0,W,H);
-  if(img1){
-    const sc=+document.getElementById('ba-s1').value/100;
-    baCtx.drawImage(img1,(W-img1.width*sc)/2,(H-img1.height*sc)/2,img1.width*sc,img1.height*sc);
-  }
+  baCv.width=W;baCv.height=H;baCtx.clearRect(0,0,W,H);
+  if(img1){const sc=+document.getElementById('ba-s1').value/100;baCtx.drawImage(img1,(W-img1.width*sc)/2,(H-img1.height*sc)/2,img1.width*sc,img1.height*sc);}
   const splitX=Math.round(W*baPos);
-  baCtx.save();
-  baCtx.beginPath();baCtx.rect(splitX,0,W-splitX,H);baCtx.clip();
-  if(img2){
-    const sc=+document.getElementById('ba-s2').value/100;
-    baCtx.drawImage(img2,(W-img2.width*sc)/2,(H-img2.height*sc)/2,img2.width*sc,img2.height*sc);
-  }
+  baCtx.save();baCtx.beginPath();baCtx.rect(splitX,0,W-splitX,H);baCtx.clip();
+  if(img2){const sc=+document.getElementById('ba-s2').value/100;baCtx.drawImage(img2,(W-img2.width*sc)/2,(H-img2.height*sc)/2,img2.width*sc,img2.height*sc);}
   baCtx.restore();
   document.getElementById('ba-line').style.left=(baPos*100)+'%';
 }
 
+function setDragMode(n){
+  dragMode=n;
+  document.getElementById('dm1').className='dm'+(n===1?' active':'');
+  document.getElementById('dm2').className='dm'+(n===2?' active':'');
+  document.getElementById('drag-hint').textContent='Bild '+n+' mit Finger/Maus verschieben — oben umschalten';
+}
+
 const wrap=document.getElementById('wrap');
-function getEvtPos(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
-wrap.addEventListener('mousedown',e=>{if(!img2)return;dragActive=true;const p=getEvtPos(e);dragStartX=p.x-img2OffX;dragStartY=p.y-img2OffY;});
-wrap.addEventListener('touchstart',e=>{if(!img2)return;dragActive=true;const p=getEvtPos(e);dragStartX=p.x-img2OffX;dragStartY=p.y-img2OffY;},{passive:true});
-window.addEventListener('mousemove',e=>{if(!dragActive)return;const p=getEvtPos(e);img2OffX=p.x-dragStartX;img2OffY=p.y-dragStartY;document.getElementById('offX').value=Math.round(img2OffX);document.getElementById('offY').value=Math.round(img2OffY);document.getElementById('xVal').textContent=Math.round(img2OffX)+'px';document.getElementById('yVal').textContent=Math.round(img2OffY)+'px';draw();});
-window.addEventListener('touchmove',e=>{if(!dragActive)return;const p=getEvtPos(e);img2OffX=p.x-dragStartX;img2OffY=p.y-dragStartY;draw();},{passive:true});
+function getPos(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
+
+function startDrag(e){
+  const active=dragMode===1?img1:img2;if(!active)return;
+  dragActive=true;const p=getPos(e);
+  if(dragMode===1){dragSX=p.x-off1X;dragSY=p.y-off1Y;}
+  else{dragSX=p.x-off2X;dragSY=p.y-off2Y;}
+}
+wrap.addEventListener('mousedown',startDrag);
+wrap.addEventListener('touchstart',startDrag,{passive:true});
+
+function moveDrag(e){
+  if(!dragActive)return;const p=getPos(e);
+  if(dragMode===1){
+    off1X=p.x-dragSX;off1Y=p.y-dragSY;
+    document.getElementById('offX1').value=Math.round(off1X);document.getElementById('x1Val').textContent=Math.round(off1X)+'px';
+    document.getElementById('offY1').value=Math.round(off1Y);document.getElementById('y1Val').textContent=Math.round(off1Y)+'px';
+  }else{
+    off2X=p.x-dragSX;off2Y=p.y-dragSY;
+    document.getElementById('offX2').value=Math.round(off2X);document.getElementById('x2Val').textContent=Math.round(off2X)+'px';
+    document.getElementById('offY2').value=Math.round(off2Y);document.getElementById('y2Val').textContent=Math.round(off2Y)+'px';
+  }
+  draw();
+}
+window.addEventListener('mousemove',moveDrag);
+window.addEventListener('touchmove',moveDrag,{passive:true});
 window.addEventListener('mouseup',()=>dragActive=false);
 window.addEventListener('touchend',()=>dragActive=false);
 
@@ -218,25 +244,26 @@ function switchTab(t){
 document.getElementById('dlBtn').addEventListener('click',()=>{
   const src=mode==='overlay'?document.getElementById('cv'):baCv;
   if(!src.width)return;
-  const a=document.createElement('a');a.download='overlay.png';a.href=src.toDataURL('image/png');a.click();
+  const filename='overlay_'+String(saveIndex).padStart(3,'0')+'.png';
+  const a=document.createElement('a');a.download=filename;a.href=src.toDataURL('image/png');a.click();
+  document.getElementById('saveInfo').textContent='Gespeichert als: '+filename;
+  saveIndex++;
 });
 
 document.getElementById('resetBtn').addEventListener('click',()=>{
-  img1=null;img2=null;img2OffX=0;img2OffY=0;baPos=0.5;
-  ['l1','l2'].forEach(id=>document.getElementById(id).textContent=id==='l1'?'Bild 1 tippen':'Bild 2 tippen');
+  img1=null;img2=null;off1X=0;off1Y=0;off2X=0;off2Y=0;baPos=0.5;
+  ['l1','l2'].forEach((id,i)=>document.getElementById(id).textContent='Bild '+(i+1)+' laden');
   ['dz1','dz2'].forEach(id=>document.getElementById(id).classList.remove('loaded'));
   ['f1','f2'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('opacity').value=50;document.getElementById('opVal').textContent='50%';
-  ['scale1','scale2','ba-s1','ba-s2'].forEach(id=>{document.getElementById(id).value=100;});
-  document.getElementById('s1Val').textContent='100%';document.getElementById('s2Val').textContent='100%';
-  document.getElementById('baS1Val').textContent='100%';document.getElementById('baS2Val').textContent='100%';
-  document.getElementById('rot2').value=0;document.getElementById('r2Val').textContent='0°';
-  document.getElementById('offX').value=0;document.getElementById('xVal').textContent='0px';
-  document.getElementById('offY').value=0;document.getElementById('yVal').textContent='0px';
+  const defs={opacity:50,scale1:100,scale2:100,rot2:0,offX1:0,offY1:0,offX2:0,offY2:0,'ba-s1':100,'ba-s2':100};
+  const labs={opacity:'opVal',scale1:'s1Val',scale2:'s2Val',rot2:'r2Val',offX1:'x1Val',offY1:'y1Val',offX2:'x2Val',offY2:'y2Val','ba-s1':'baS1Val','ba-s2':'baS2Val'};
+  const sufx={opacity:'%',scale1:'%',scale2:'%',rot2:'°',offX1:'px',offY1:'px',offX2:'px',offY2:'px','ba-s1':'%','ba-s2':'%'};
+  Object.keys(defs).forEach(id=>{document.getElementById(id).value=defs[id];document.getElementById(labs[id]).textContent=defs[id]+sufx[id];});
   document.getElementById('ba-line').style.left='50%';
   document.getElementById('ph').style.display='';
   document.getElementById('ba-ph').style.display='';
-  const ctx=document.getElementById('cv').getContext('2d');ctx.clearRect(0,0,W,H);
+  document.getElementById('saveInfo').textContent='';
+  document.getElementById('cv').getContext('2d').clearRect(0,0,W,H);
   baCtx.clearRect(0,0,W,H);
 });
 

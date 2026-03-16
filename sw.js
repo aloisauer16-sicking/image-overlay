@@ -1,4 +1,4 @@
-const CACHE = 'overlay-v1';
+const CACHE = 'overlay-v2';
 const FILES = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
